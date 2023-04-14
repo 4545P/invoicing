@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class InvoicingResponse {
 
 	private List<Invoicing> isbnList;
+	
+	private List<InvoicingResponse> results;
 
 	private String isbn;
 
@@ -42,9 +44,23 @@ public class InvoicingResponse {
 		this.price = price;
 	}
 
+	 
+
 	public InvoicingResponse(List<Invoicing> isbnList, String message) {
 		this.isbnList = isbnList;
 		this.message = message;
+	}
+	
+	
+
+	public InvoicingResponse(String message) {
+		super();
+		this.message = message;
+	}
+
+	public InvoicingResponse(String message , List<InvoicingResponse> results) {
+		this.message = message;
+		this.results = results;
 	}
 
 	public List<Invoicing> getIsbnList() {
@@ -135,4 +151,13 @@ public class InvoicingResponse {
 		this.message = message;
 	}
 
+	public List<InvoicingResponse> getResults() {
+		return results;
+	}
+
+	public void setResults(List<InvoicingResponse> results) {
+		this.results = results;
+	}
+
+	
 }
