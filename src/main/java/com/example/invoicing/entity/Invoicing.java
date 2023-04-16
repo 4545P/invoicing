@@ -16,21 +16,27 @@ public class Invoicing {
 	@Column(name = "isbn")
 	private String isbn;
 
+	// 書名
 	@Column(name = "book")
 	private String book;
 
+	// 作者
 	@Column(name = "author")
 	private String author;
 
+	// 分類
 	@Column(name = "category")
 	private String category;
 
+	// 價格
 	@Column(name = "price")
 	private int price;
 
+	// 庫存
 	@Column(name = "stock")
 	private Integer stock;
 
+	// 銷貨
 	@Column(name = "sell")
 	private Integer sell;
 

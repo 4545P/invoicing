@@ -33,12 +33,14 @@ public class InvoicingServiceImpl implements InvoicingService {
 	@Autowired
 	private InvoicingDao invoicingDao;
 
+	// 新增書籍
 	@Transactional
 	@Override
 	public InvoicingResponse addBook(InvoicingRequest invoicingRequest) {
 		List<Invoicing> isbnList = invoicingRequest.getIsbnList();
 		List<Invoicing> errorList = new ArrayList<>();
 
+		// 檢查輸入的參數
 		if (CollectionUtils.isEmpty(isbnList)) {
 			return new InvoicingResponse(errorList, "ISBN欄位為空");
 		}
@@ -52,11 +54,13 @@ public class InvoicingServiceImpl implements InvoicingService {
 			} else if (!isbnSet.add(isbn.getIsbn())) {
 				errorList.add(isbn);
 			}
+			// 有重複的ISBN則add進errorList
 			Optional<Invoicing> existingIsbn = invoicingDao.findById(isbn.getIsbn());
 			if (existingIsbn.isPresent()) {
 				errorList.add(isbn);
 			}
 		}
+		// 回傳資訊與訊息
 		if (!errorList.isEmpty()) {
 			return new InvoicingResponse(errorList, "ISBN重複或欄位為空或價格錯誤");
 		}
@@ -64,10 +68,12 @@ public class InvoicingServiceImpl implements InvoicingService {
 		return new InvoicingResponse(isbnList, "書籍新增成功");
 	}
 
+	// 更新分類
 	@Transactional
 	@Override
 	public InvoicingResponse updateCategory(String isbn, List<String> newCategories) {
 		Optional<Invoicing> existingBook = invoicingDao.findById(isbn);
+		// 檢查輸入的參數
 		if (!existingBook.isPresent()) {
 			return new InvoicingResponse("修改錯誤請檢查參數");
 		}
@@ -78,39 +84,44 @@ public class InvoicingServiceImpl implements InvoicingService {
 			return new InvoicingResponse("修改錯誤請檢查參數");
 		}
 
+		// get invoicing裡的category屬性並轉成string
 		Invoicing book = existingBook.get();
 		String categoriesStr = book.getCategory();
+		// 使用split將字串轉為字串列表
 		List<String> categoriesList = Arrays.asList(categoriesStr.split(","));
 
+		// 遍歷輸入的category if set裡沒有則add set裡有則remove
 		Set<String> categoriesSet = new HashSet<>(categoriesList);
 		for (String category : newCategories) {
-			if (!categoriesSet.contains(category)) {
-				categoriesSet.add(category);
-			} else {
+			if (!categoriesSet.add(category)) {
 				categoriesSet.remove(category);
 			}
 		}
 
-		List<String> newCategoriesList = new ArrayList<>(categoriesSet);
-		String newCategoriesStr = String.join(",", newCategoriesList);
-		book.setCategory(newCategoriesStr);
+		// 將List轉為String並save進資料庫
+		book.setCategory(String.join(",", categoriesSet));
 		invoicingDao.save(book);
-
+		// 回傳資訊與訊息
 		return new InvoicingResponse(Arrays.asList(book), "書籍類別更新成功");
 	}
 
+	// 分類查詢
 	@Override
 	public InvoicingResponse findByCategoryContaining(String category) {
+		// 檢查輸入參數
 		if (category == null || category.isEmpty()) {
 			return new InvoicingResponse("查詢錯誤請檢查參數");
 		}
-		
+
+		// 模糊搜尋資料庫的分類
 		List<Invoicing> search = invoicingDao.findByCategoryContaining(category);
-		
+
+		// if找不到分類
 		if (search.isEmpty()) {
 			return new InvoicingResponse("找不到符合的類別");
 		}
-		
+
+		// 將想回傳的資訊塞進List
 		List<Invoicing> results = new ArrayList<>();
 		for (Invoicing invoicing : search) {
 			Invoicing result = new Invoicing();
@@ -122,9 +133,11 @@ public class InvoicingServiceImpl implements InvoicingService {
 			results.add(result);
 		}
 
+		// 回傳List與訊息
 		return new InvoicingResponse(results, "查詢成功");
 	}
 
+	// 消費者搜尋
 	@Override
 	public InvoicingResponse search(String isbn, String book, String author) {
 		// 查詢輸入的是哪一個參數
@@ -149,6 +162,7 @@ public class InvoicingServiceImpl implements InvoicingService {
 			return new InvoicingResponse("搜尋錯誤, 請至少提供一個參數: isbn, book, author.");
 		}
 
+		// 將想回傳的資訊塞進List
 		List<Invoicing> results = new ArrayList<>();
 		for (Invoicing invoicing : searchResult) {
 			Invoicing result = new Invoicing();
@@ -158,9 +172,11 @@ public class InvoicingServiceImpl implements InvoicingService {
 			result.setPrice(invoicing.getPrice());
 			results.add(result);
 		}
+		// 回傳List與訊息
 		return new InvoicingResponse(results, "查詢成功");
 	}
 
+	// 店家查詢
 	@Override
 	public InvoicingResponse searchForShop(String isbn, String book, String author) {
 		// 查詢輸入的是哪一個參數
@@ -185,6 +201,7 @@ public class InvoicingServiceImpl implements InvoicingService {
 			return new InvoicingResponse("搜尋錯誤, 請至少提供一個參數: isbn, book, author.");
 		}
 
+		// 將想回傳的資訊塞進List
 		List<Invoicing> results = new ArrayList<>();
 		for (Invoicing invoicing : searchResult) {
 			Invoicing result = new Invoicing();
@@ -196,13 +213,16 @@ public class InvoicingServiceImpl implements InvoicingService {
 			result.setSell(invoicing.getSell());
 			results.add(result);
 		}
+		// 回傳List與訊息
 		return new InvoicingResponse(results, "查詢成功");
 	}
 
+	// 進貨
 	@Transactional
 	@Override
 	public InvoicingResponse purchase(String isbn, Integer purchase) {
 		Optional<Invoicing> isbnOp = invoicingDao.findById(isbn);
+		// 檢查輸入的參數
 		if (!isbnOp.isPresent()) {
 			return new InvoicingResponse("ISBN錯誤");
 		}
@@ -219,6 +239,7 @@ public class InvoicingServiceImpl implements InvoicingService {
 		invoicing.setStock(stock);
 		invoicingDao.save(invoicing);
 
+		// set更新完的資訊並回傳
 		InvoicingResponse result = new InvoicingResponse();
 		result.setIsbn(invoicing.getIsbn());
 		result.setBook(invoicing.getBook());
@@ -228,10 +249,11 @@ public class InvoicingServiceImpl implements InvoicingService {
 		return result;
 	}
 
+	// 更新價格
 	@Transactional
 	@Override
 	public InvoicingResponse renew(String isbn, Integer price) {
-		// 檢查ISBN及價格
+		// 檢查輸入的參數
 		Optional<Invoicing> isbnOp = invoicingDao.findById(isbn);
 		if (!isbnOp.isPresent()) {
 			return new InvoicingResponse("ISBN錯誤");
@@ -245,6 +267,8 @@ public class InvoicingServiceImpl implements InvoicingService {
 		int newPrice = (price);
 		invoicing.setPrice(newPrice);
 		invoicingDao.save(invoicing);
+
+		// set更新完的資訊並回傳
 		InvoicingResponse result = new InvoicingResponse();
 		result.setIsbn(invoicing.getIsbn());
 		result.setBook(invoicing.getBook());
@@ -254,6 +278,7 @@ public class InvoicingServiceImpl implements InvoicingService {
 		return result;
 	}
 
+	// 銷貨
 	@Transactional
 	@Override
 	public InvoicingResponse sales(InvoicingRequest invoicingRequest) {
@@ -278,12 +303,17 @@ public class InvoicingServiceImpl implements InvoicingService {
 			if (totalCount > 3) {
 				return new InvoicingResponse("訂單數量超過限制");
 			}
-			// 回傳價格與相關資料
+
+			// 從index:0開始拿取資料庫的資料
 			Invoicing invoicing = invoicings.get(0);
+			// get對應的價格並乘上銷售的數量
 			int price = invoicing.getPrice();
 			int total = price * item.getNum();
+			// 對庫存與銷貨量做增減
 			invoicing.setStock(invoicing.getStock() - item.getNum());
 			invoicing.setSell(invoicing.getSell() + item.getNum());
+
+			// set更新完的資訊並回傳
 			InvoicingResponse result = new InvoicingResponse();
 			result.setIsbn(invoicing.getIsbn());
 			result.setBook(invoicing.getBook());
