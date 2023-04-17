@@ -32,7 +32,7 @@ public class InvoicingController {
 	//分類搜尋
 	@PostMapping("/categories_search")
 	public InvoicingResponse findByCategoryContaining(@RequestBody InvoicingRequest invoicingRequest) {
-	    return invoicingService.findByCategoryContaining(invoicingRequest.getCategory());
+	    return invoicingService.findByCategoryContaining(invoicingRequest.getCategories());
 	}
 	
 	//客戶搜尋

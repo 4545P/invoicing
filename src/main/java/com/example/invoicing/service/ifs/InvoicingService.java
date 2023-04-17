@@ -15,7 +15,7 @@ public interface InvoicingService {
 	public InvoicingResponse updateCategory(String isbn, List<String> categories);
 
 	// 分類搜尋
-	public InvoicingResponse findByCategoryContaining(String category);
+	public InvoicingResponse findByCategoryContaining(List<String> categories);
 	
 
 	// 客戶搜尋

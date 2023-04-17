@@ -107,14 +107,18 @@ public class InvoicingServiceImpl implements InvoicingService {
 
 	// 分類查詢
 	@Override
-	public InvoicingResponse findByCategoryContaining(String category) {
+	public InvoicingResponse findByCategoryContaining(List<String> categories) {
 		// 檢查輸入參數
-		if (category == null || category.isEmpty()) {
+		if (categories == null || categories.isEmpty()) {
 			return new InvoicingResponse("查詢錯誤請檢查參數");
 		}
 
-		// 模糊搜尋資料庫的分類
-		List<Invoicing> search = invoicingDao.findByCategoryContaining(category);
+		// 遍歷每一個字串做模糊搜尋
+		List<Invoicing> search = new ArrayList<>();
+		for (String category : categories) {
+		    List<Invoicing> result = invoicingDao.findByCategoryContaining(category);
+		    search.addAll(result);
+		}
 
 		// if找不到分類
 		if (search.isEmpty()) {

@@ -12,7 +12,6 @@ public interface InvoicingDao extends JpaRepository<Invoicing, String> {
 
 	// 分類搜尋
 	List<Invoicing> findByCategoryContaining(String category);
-	
 
 	// 客戶搜尋
 	List<Invoicing> findByIsbn(String isbn);
@@ -23,5 +22,5 @@ public interface InvoicingDao extends JpaRepository<Invoicing, String> {
 
 	// 排行榜
 	List<Invoicing> findTop5ByOrderBySellDesc();
-	
+
 }
