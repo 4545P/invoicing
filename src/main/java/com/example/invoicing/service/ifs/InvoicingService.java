@@ -9,7 +9,7 @@ import com.example.invoicing.vo.response.InvoicingResponse;
 public interface InvoicingService {
 
 	// 新增書籍
-	public InvoicingResponse addBook(InvoicingRequest invoicingRequest);
+	public InvoicingResponse addBooks(InvoicingRequest invoicingRequest);
 
 	// 修改分類
 	public InvoicingResponse updateCategory(String isbn, List<String> categories);

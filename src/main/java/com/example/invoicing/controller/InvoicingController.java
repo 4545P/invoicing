@@ -3,6 +3,7 @@ package com.example.invoicing.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +12,7 @@ import com.example.invoicing.service.ifs.InvoicingService;
 import com.example.invoicing.vo.request.InvoicingRequest;
 import com.example.invoicing.vo.response.InvoicingResponse;
 
+@CrossOrigin
 @RestController
 public class InvoicingController {
 
@@ -18,9 +20,9 @@ public class InvoicingController {
 	private InvoicingService invoicingService;
 
 	//新增書籍
-	@PostMapping("/add_book")
-	public InvoicingResponse addBook(@RequestBody InvoicingRequest invoicingRequest) {
-		return invoicingService.addBook(invoicingRequest);
+	@PostMapping("/add_books")
+	public InvoicingResponse addBooks(@RequestBody InvoicingRequest invoicingRequest) {
+		return invoicingService.addBooks(invoicingRequest);
 	}
 	
 	//修改分類

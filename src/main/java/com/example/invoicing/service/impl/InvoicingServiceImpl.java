@@ -36,7 +36,7 @@ public class InvoicingServiceImpl implements InvoicingService {
 	// 新增書籍
 	@Transactional
 	@Override
-	public InvoicingResponse addBook(InvoicingRequest invoicingRequest) {
+	public InvoicingResponse addBooks(InvoicingRequest invoicingRequest) {
 		List<Invoicing> isbnList = invoicingRequest.getIsbnList();
 		List<Invoicing> errorList = new ArrayList<>();
 
